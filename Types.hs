@@ -3,14 +3,9 @@ module Types where
 import Data.Vect
 import Graphics.FreeGame
 import Control.Monad.State
-import Control.Monad.Free
 import Control.Applicative
 import Control.Lens
 import Collision
-
-primes :: [Integer]
-primes = 2 : filter p [3,5..] where
-    p n = foldr (\m r -> m * m > n || n `mod` m /= 0 && r) undefined primes
 
 type Fig = Figure Basic Vec2
 

@@ -1,10 +1,8 @@
 {-# LANGUAGE ImplicitParams, TemplateHaskell, MonadComprehensions, FlexibleContexts #-}
 import Graphics.FreeGame
-import Control.Monad.Free
 import Control.Monad.State
 import Control.Applicative
 import Data.Vect hiding (_1, _2)
-import Data.Either
 import Control.Lens
 
 import Collision (collisions)
@@ -46,7 +44,7 @@ updateBar = zoom bar $ do
         (True, False) -> barPos %= (&+Vec2 (-barSpeed) 0)
         (False, True) -> barPos %= (&+Vec2 barSpeed 0)
         _ -> return ()
-    collisions wallShape <$> (use barShape) >>= \r -> case r of
+    collisions wallShape <$> use barShape >>= \r -> case r of
         Just _ -> barPos .= origin
         Nothing -> return ()
 
