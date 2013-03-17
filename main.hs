@@ -10,6 +10,12 @@ import Types
 
 loadBitmaps "images"
 
+primes :: [Integer]
+primes = 2 : filter p [3,5..]
+
+isPrime ::　Integer -> Bool
+isPrime n = foldr (\m r -> m * m > n || n `mod` m /= 0 && r) undefined primes
+
 updatePacks :: TheGame ()
 updatePacks = use packs >>= \ps -> (packs<~) $ forM ps $ execStateT $ do
     vel <- use packVel

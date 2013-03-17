@@ -9,7 +9,10 @@ import Collision
 
 type Fig = Figure Basic Vec2
 
-data Block = Block { _blockPos :: Vec2 }
+data Block = Block
+    { _blockPos :: Vec2
+    , _blockNumber :: Integer
+    }
 makeLenses ''Block
 
 blockShape :: Getter Block Fig
@@ -33,6 +36,7 @@ blockShape = blockPos . to fig where
 data Pack = Pack
     { _packPos :: Vec2
     , _packVel :: Vec2
+    , _packNumber :: Integer
     }
 
 makeLenses ''Pack
