@@ -1,31 +1,29 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Types where
-import Data.Vect
-import Graphics.FreeGame
+import Graphics.UI.FreeGame
 import Control.Monad.State
 import Control.Applicative
 import Control.Lens
 import Collision
 
-type Fig = Figure Basic Vec2
+type Fig = Figure Basic (V2 Float)
 
 data Block = Block
-    { _blockPos :: Vec2
-    , _blockNumber :: Integer
+    { _blockPos :: V2 Float
     }
 makeLenses ''Block
 
 blockShape :: Getter Block Fig
 blockShape = blockPos . to fig where
-    fig p@(Vec2 px py) = Primitive $ Custom $ \f -> case f of
-        s@(Circle r q@(Vec2 x y))
-            | x0 < x && x < x1 -> guard' (abs (y0 - 4 - y) < r) (Vec2 x y0) <|> guard' (abs (y - y1 - 4) < r) (Vec2 x y1)
-            | y0 < y && y < y1 -> guard' (abs (x0 - 4 - x) < r) (Vec2 x0 y) <|> guard' (abs (x - x1 - 4) < r) (Vec2 x1 y)
+    fig p@(V2 px py) = Primitive $ Custom $ \f -> case f of
+        s@(Circle r q@(V2 x y))
+            | x0 < x && x < x1 -> guard' (abs (y0 - 4 - y) < r) (V2 x y0) <|> guard' (abs (y - y1 - 4) < r) (V2 x y1)
+            | y0 < y && y < y1 -> guard' (abs (x0 - 4 - x) < r) (V2 x0 y) <|> guard' (abs (x - x1 - 4) < r) (V2 x1 y)
             | otherwise -> collisions (Primitive s) $ Figures $ map Primitive
-                [ Circle 8 (Vec2 x0 y0)
-                , Circle 8 (Vec2 x1 y0)
-                , Circle 8 (Vec2 x0 y1)
-                , Circle 8 (Vec2 x1 y1)]
+                [ Circle 8 (V2 x0 y0)
+                , Circle 8 (V2 x1 y0)
+                , Circle 8 (V2 x0 y1)
+                , Circle 8 (V2 x1 y1)]
         _ -> error "unsupported operation"
         where
             x0 = px - 32
@@ -34,9 +32,8 @@ blockShape = blockPos . to fig where
             y1 = py + 8
 
 data Pack = Pack
-    { _packPos :: Vec2
-    , _packVel :: Vec2
-    , _packNumber :: Integer
+    { _packPos :: V2 Float
+    , _packVel :: V2 Float
     }
 
 makeLenses ''Pack
@@ -44,17 +41,17 @@ makeLenses ''Pack
 packShape :: Getter Pack Fig
 packShape = packPos . to (Primitive . Circle 15)
 
-data Bar = Bar { _barPos :: Vec2 }
+data Bar = Bar { _barPos :: V2 Float }
 
 makeLenses ''Bar
 
 barShape :: Getter Bar Fig
 barShape = barPos . to fig where
-    fig origin = fmap (&+origin) $ Figures $ map Primitive
-        [ Circle 12 $ Vec2 (-88) 0
-        , Circle 12 $ Vec2 88 0
-        , LineSegment (Vec2 176 0) (Vec2 (-88) 12)
-        , LineSegment (Vec2 (-176) 0) (Vec2 88 (-12))
+    fig origin = fmap (^+^origin) $ Figures $ map Primitive
+        [ Circle 12 $ V2 (-88) 0
+        , Circle 12 $ V2 88 0
+        , LineSegment (V2 176 0) (V2 (-88) 12)
+        , LineSegment (V2 (-176) 0) (V2 88 (-12))
         ]
 
 data World = World
@@ -74,13 +71,13 @@ makeLenses ''World
 
 wallShape :: Fig
 wallShape = Figures $ map Primitive
-    [ LineSegment (Vec2 640 0) (Vec2 0 0)
-    , LineSegment (Vec2 0 480) (Vec2 0 0)
-    , LineSegment (Vec2 0 (-480)) (Vec2 640 480)
+    [ LineSegment (V2 640 0) (V2 0 0)
+    , LineSegment (V2 0 480) (V2 0 0)
+    , LineSegment (V2 0 (-480)) (V2 640 480)
     ]
 
 bottomShape :: Fig
-bottomShape = Primitive $ LineSegment (Vec2 (-640) 0) (Vec2 640 480)
+bottomShape = Primitive $ LineSegment (V2 (-640) 0) (V2 640 480)
 
 type TheGame = StateT World Game
 
